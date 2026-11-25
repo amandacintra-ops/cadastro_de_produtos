@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cadastro de Canecas</title>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+
+    <header class="topo">
+        <p class="eyebrow">CATÁLOGO DE PRODUTOS</p>
+
+        <h1>Cadastro de Canecas</h1>
+
+        <p>Organize seus modelos, fotos e preços em um só lugar.</p>
+    </header>
+
+    <main class="container">
+
+        <section class="painel">
+
+            <div class="titulo-secao">
+                <div>
+                    <p class="eyebrow">GERENCIAMENTO</p>
+                    <h2 id="tituloFormulario">Cadastrar produto</h2>
+                </div>
+
+                <span class="etiqueta">Novo cadastro</span>
+            </div>
+
+            <form id="formProduto">
+
+                <div class="campo">
+                    <label for="codigo">Código</label>
+                    <input
+                        type="text"
+                        id="codigo"
+                        placeholder="Digite o código"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="nome">Nome do produto</label>
+                    <input
+                        type="text"
+                        id="nome"
+                        placeholder="Ex.: Caneca Scooby-Doo"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="descricao">Descrição</label>
+                    <textarea
+                        id="descricao"
+                        rows="3"
+                        placeholder="Descreva o produto..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="campo">
+                    <label for="preco">Preço (R$)</label>
+                    <input
+                        type="number"
+                        id="preco"
+                        min="0.01"
+                        step="0.01"
+                        placeholder="39.90"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="foto">Foto do produto</label>
+
+                    <select id="foto" required>
+                        <option value="">Selecione uma imagem</option>
+                        <option value="scooby.jpeg">Scooby</option>
+                        <option value="rapunzel.jpeg">Rapunzel</option>
+                        <option value="patrick.jpeg">Patrick</option>
+                        <option value="oncinha.jpeg">Oncinha</option>
+                        <option value="morango.jpeg">Morango</option>
+                        <option value="laco.jpeg">Laço</option>
+                        <option value="jackesally.jpeg">Jack e Sally</option>
+                        <option value="hellokit.jpeg">Hello Kitty</option>
+                        <option value="gatinhoeflor.jpeg">Gatinho e flor</option>
+                        <option value="gatinha.jpeg">Gatinha</option>
+                    </select>
+                </div>
+
+                <div class="preview-area">
+
+                    <img
+                        id="previewFoto"
+                        alt="Prévia da foto"
+                        hidden
+                    >
+
+                    <span id="textoPreview">
+                        A prévia aparecerá aqui.
+                    </span>
+
+                </div>
+
+                <div class="acoes">
+
+                    <button
+                        class="botao primario"
+                        id="botaoSalvar"
+                        type="submit"
+                    >
+                        Cadastrar produto
+                    </button>
+
+                    <button
+                        class="botao secundario"
+                        id="botaoCancelar"
+                        type="button"
+                        hidden
+                    >
+                        Cancelar edição
+                    </button>
+
+                </div>
+
+                <p id="mensagem" role="status"></p>
+
+            </form>
+
+        </section>
+
+        <section class="catalogo">
+
+            <div class="titulo-secao">
+
+                <div>
+                    <p class="eyebrow">SEUS PRODUTOS</p>
+                    <h2>Produtos cadastrados</h2>
+                </div>
+
+                <span class="etiqueta" id="contador">
+                    0 produtos
+                </span>
+
+            </div>
+
+            <div id="listaProdutos" class="grade-produtos">
+
+                <p class="vazio">
+                    Nenhum produto cadastrado ainda.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        Cadastro de produtos • Dados salvos neste navegador
+    </footer>
+
+</body>
+</html>

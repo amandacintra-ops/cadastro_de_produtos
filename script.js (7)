@@ -1,0 +1,374 @@
+
+const chave = 'meusProdutos';
+
+let altId = null;
+
+function carregarProdutos() {
+    const produtos = localStorage.getItem(chave);
+    return produtos ? JSON.parse(produtos) : [];
+}
+
+function salvarProdutos(produtos) {
+    localStorage.setItem(chave, JSON.stringify(produtos));
+}
+
+const imagens = [
+    'scooby.jpeg',
+    'rapunzel.jpeg',
+    'patrick.jpeg',
+    'oncinha.jpeg',
+    'morango.jpeg',
+    'laco.jpeg',
+    'jackesally.jpeg',
+    'hellokit.jpeg',
+    'gatinhoeflor.jpeg',
+    'gatinha.jpeg'
+];
+
+function renderizarProdutos() {
+
+    const lista = document.getElementById('listaProdutos');
+
+    lista.innerHTML = '';
+
+    const produtos = carregarProdutos();
+
+    document.getElementById('contador').textContent =
+        produtos.length + ' produtos';
+
+    if (produtos.length === 0) {
+
+        lista.innerHTML = `
+            <p class="vazio">Nenhum produto cadastrado.</p>
+        `;
+
+        return;
+    }
+
+    produtos.forEach(prod => {
+
+        const card = document.createElement('article');
+
+        card.className = 'card-produto';
+
+        const imagem = imagens.includes(prod.foto)
+            ? prod.foto
+            : '';
+
+        card.innerHTML = `
+
+            <img src="img/${imagem}" alt="${escapeHtml(prod.nome)}">
+
+            <div class="info-produto">
+
+                <span class="codigo-produto">
+                    Código: ${escapeHtml(prod.codigo)}
+                </span>
+
+                <h3>${escapeHtml(prod.nome)}</h3>
+
+                <p class="descricao-produto">
+                    ${escapeHtml(prod.descricao)}
+                </p>
+
+                <p class="preco-produto">
+                    R$ ${Number(prod.preco).toFixed(2).replace('.', ',')}
+                </p>
+
+                <div class="acoes-card">
+
+                    <button
+                        class="botao editar"
+                        data-id="${escapeHtml(prod.id)}">
+                        Editar
+                    </button>
+
+                    <button
+                        class="botao excluir"
+                        data-id="${escapeHtml(prod.id)}">
+                        Excluir
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+        lista.appendChild(card);
+
+    });
+
+    lista.querySelectorAll('.editar').forEach(b => {
+
+        b.addEventListener('click', (e) => {
+
+            const id = e.currentTarget.getAttribute('data-id');
+
+            carregarProdutoNoFormulario(id);
+
+        });
+
+    });
+
+    lista.querySelectorAll('.excluir').forEach(b => {
+
+        b.addEventListener('click', (e) => {
+
+            const id = e.currentTarget.getAttribute('data-id');
+
+            if (confirm('Deseja excluir este produto?')) {
+
+                excluirProduto(id);
+
+            }
+
+        });
+
+    });
+
+}
+
+function carregarProdutoNoFormulario(id) {
+
+    const produtos = carregarProdutos();
+
+    const prod = produtos.find(p => p.id === id);
+
+    if (!prod) {
+
+        alert('Produto não encontrado.');
+
+        return;
+
+    }
+
+    document.getElementById('codigo').value = prod.codigo;
+
+    document.getElementById('nome').value = prod.nome;
+
+    document.getElementById('descricao').value = prod.descricao;
+
+    document.getElementById('preco').value = prod.preco;
+
+    document.getElementById('foto').value = prod.foto;
+
+    altId = prod.id;
+
+    atualizarPreview();
+
+    document.getElementById('tituloFormulario').textContent =
+        'Editar produto';
+
+    document.getElementById('botaoSalvar').textContent =
+        'Salvar alterações';
+
+    document.getElementById('botaoCancelar').hidden = false;
+
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+
+}
+
+function inserirProduto(dados) {
+
+    const produtos = carregarProdutos();
+
+    const id = Date.now().toString();
+
+    produtos.push({
+        id,
+        ...dados
+    });
+
+    salvarProdutos(produtos);
+
+}
+
+function excluirProduto(id) {
+
+    let produtos = carregarProdutos();
+
+    produtos = produtos.filter(p => p.id !== id);
+
+    salvarProdutos(produtos);
+
+    if (altId === id) {
+        resetFormulario();
+    }
+
+    renderizarProdutos();
+
+}
+
+function resetFormulario() {
+
+    document.getElementById('formProduto').reset();
+
+    document.getElementById('codigo').value = '';
+
+    altId = null;
+
+    document.getElementById('tituloFormulario').textContent =
+        'Cadastrar produto';
+
+    document.getElementById('botaoSalvar').textContent =
+        'Cadastrar produto';
+
+    document.getElementById('botaoCancelar').hidden = true;
+
+    document.getElementById('previewFoto').hidden = true;
+
+    document.getElementById('textoPreview').hidden = false;
+
+    document.getElementById('textoPreview').textContent =
+        'A prévia aparecerá aqui.';
+
+}
+
+function atualizarProduto(id, novosDados) {
+
+    const produtos = carregarProdutos();
+
+    const idx = produtos.findIndex(p => p.id === id);
+
+    if (idx === -1) {
+
+        alert('Produto não encontrado.');
+
+        return;
+
+    }
+
+    produtos[idx] = {
+        id,
+        ...novosDados
+    };
+
+    salvarProdutos(produtos);
+
+}
+
+function escapeHtml(str) {
+
+    if (!str && str !== 0) return '';
+
+    return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+
+}
+
+function atualizarPreview() {
+
+    const foto = document.getElementById('foto').value;
+
+    const preview = document.getElementById('previewFoto');
+
+    const texto = document.getElementById('textoPreview');
+
+    if (!imagens.includes(foto)) {
+
+        preview.hidden = true;
+
+        texto.hidden = false;
+
+        return;
+
+    }
+
+    preview.src = 'img/' + foto;
+
+    preview.alt = 'Imagem da caneca selecionada';
+
+    preview.hidden = false;
+
+    texto.hidden = true;
+
+}
+
+document.getElementById('foto').addEventListener('change', atualizarPreview);
+
+document.getElementById('formProduto').addEventListener('submit', function(e) {
+
+    e.preventDefault();
+
+    const codigo = document.getElementById('codigo').value.trim();
+
+    const nome = document.getElementById('nome').value.trim();
+
+    const descricao = document.getElementById('descricao').value.trim();
+
+    const preco = Number(document.getElementById('preco').value);
+
+    const foto = document.getElementById('foto').value;
+
+    if (!codigo || !nome || !descricao || !foto ||
+        !Number.isFinite(preco) || preco <= 0) {
+
+        alert('Preencha todos os campos corretamente.');
+
+        return;
+
+    }
+
+    const produtos = carregarProdutos();
+
+    const codigoExiste = produtos.some(p =>
+        String(p.codigo).trim().toLowerCase() === codigo.toLowerCase()
+        && p.id !== altId
+    );
+
+    if (codigoExiste) {
+
+        alert('Esse código já está cadastrado!');
+
+        return;
+
+    }
+
+    const dados = {
+        codigo,
+        nome,
+        descricao,
+        preco,
+        foto
+    };
+
+    if (altId) {
+
+        atualizarProduto(altId, dados);
+
+        alert('Produto atualizado com sucesso!');
+
+    } else {
+
+        inserirProduto(dados);
+
+        alert('Produto cadastrado com sucesso!');
+
+    }
+
+    resetFormulario();
+
+    renderizarProdutos();
+
+});
+
+document.getElementById('botaoCancelar').addEventListener('click', function() {
+
+    if (confirm('Deseja cancelar a edição?')) {
+
+        resetFormulario();
+
+    }
+
+});
+
+resetFormulario();
+
+renderizarProdutos();
